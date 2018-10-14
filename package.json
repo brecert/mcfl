@@ -1,0 +1,11 @@
+{
+  "name": "cmd",
+  "version": "1.0.0",
+  "description": "cmd-lang",
+  "main": "src/index.js",
+  "author": "brecert",
+  "license": "MIT",
+  "dependencies": {
+    "ohm-js": "^0.14.0"
+  }
+}

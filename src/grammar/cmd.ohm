@@ -1,0 +1,135 @@
+CMD {
+  Program 
+    = SourceElement*
+  
+  space 
+    := whitespace | lineTerminator | comment
+  
+  whitespace 
+    = "\t"
+    | "\x0B"    -- verticalTab
+    | "\x0C"    -- formFeed
+    | " "
+    | "\u00A0"  -- noBreakSpace
+    | "\uFEFF"  -- byteOrderMark
+  
+  lineTerminator 
+    = "\n" | "\r" | "\u2028" | "\u2029"
+
+  comment 
+    = "#" (~lineTerminator any)*
+  
+  raw (raw input)
+    // = "|:" space? (~lineTerminator any)*
+    
+    = "`" (~"`" any)* "`"
+  
+  selector
+    = "@" letter
+  
+  identifier (an identifier) 
+  	= identifierName
+    
+  identifierName 
+    = identifierPart*
+  
+  identifierPart
+  	= letter
+    | unicodeDigit 
+    | unicodeConnectorPunctuation
+    
+  unicodeDigit (a digit)
+    = "\u0030".."\u0039" 
+    | "\u0660".."\u0669" 
+    | "\u06F0".."\u06F9" 
+    | "\u0966".."\u096F" 
+    | "\u09E6".."\u09EF" 
+    | "\u0A66".."\u0A6F" 
+    | "\u0AE6".."\u0AEF" 
+    | "\u0B66".."\u0B6F" 
+    | "\u0BE7".."\u0BEF" 
+    | "\u0C66".."\u0C6F" 
+    | "\u0CE6".."\u0CEF" 
+    | "\u0D66".."\u0D6F" 
+    | "\u0E50".."\u0E59" 
+    | "\u0ED0".."\u0ED9" 
+    | "\u0F20".."\u0F29" 
+    | "\uFF10".."\uFF19"
+    
+  unicodeConnectorPunctuation 
+    = "\u005F" 
+    | "\u203F".."\u2040" 
+    | "\u30FB" 
+    | "\uFE33".."\uFE34" 
+    | "\uFE4D".."\uFE4F" 
+    | "\uFF3F" 
+    | "\uFF65"
+
+    
+  modifier
+  	= "const"
+    
+  SourceElement
+    = Declaration | Statement
+    
+  Declaration
+    = VariableDeclaration
+    | MethodDeclaration
+    
+  VariableDeclaration
+    = modifier? identifier "=" Value
+    
+  MethodDeclaration
+    = "def" identifier Block
+    
+  Call
+    = CallCommand
+    | CallMethod
+  
+  CallCommand
+    = identifier ~whitespace Value
+  
+  CallMethod
+    = identifier ~whitespace "(" Statement* ")"
+    
+  Statement
+    = Block
+    | Conditional
+    | Call
+   	| InternalAssignment
+    | Declaration
+    | raw
+    
+  InternalAssignment
+    = identifier ":" identifier
+    
+  Block
+  	= SelectorBlock
+    | DefaultBlock
+    
+  DefaultBlock
+    = "do" StatementList "end"
+    
+  SelectorBlock
+    = "do as" selector StatementList "end"
+    
+  Conditional
+    = ConditionalIf
+    
+  ConditionalIf
+    = "if" identifier comparator Value Block
+    
+  comparator
+    = "!"? ">" "="? "="?
+    
+  StatementList
+    = Statement*
+    
+  Value
+  	= number
+    | raw
+
+  number (a number)
+    = digit* "." digit+  -- fract
+    | digit+             -- whole
+}
