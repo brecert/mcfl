@@ -26,6 +26,13 @@ class Translator {
 				return type.parse()
 			},
 
+			Block(type) {
+				return `
+# BEGIN
+${type.parse()}
+# END`
+			},
+
 			SelectorBlock(begin, selector, block, end) {
 				self.updateSelector(selector.sourceString)
 
@@ -37,8 +44,16 @@ class Translator {
 ${block.parse()}`
 			},
 
+			DefaultBlock(begin, block, end) {
+				let name = `${self.namespace}:as/execute/0`
+
+				return `execute run function ${name}
+# ${name}.mcfunction
+${block.parse()}`
+			},
+
 			ConditionalIf(_, target, comparator, value, block) {
-				return `execute if score @s ${target.parse()} matches ${self.toRange(comparator.parse(), value.parse())}`
+				return `execute if score @s ${target.parse()} matches ${self.toRange(comparator.parse(), value.parse())} ${block.parse()}`
 			},
 
 			StatementList(statments) {
@@ -90,8 +105,6 @@ ${block.parse()}`
 	toRange(comparator, value) {
 		let out
 
-		console.log(comparator)
-
 		switch (comparator) {
 			case '>':
 				out = `${value}..`
@@ -106,8 +119,6 @@ ${block.parse()}`
 				console.warn("Unknown comparator, using exact")
 				break;
 		}
-
-		console.log(out)
 		return out
 	}
 
