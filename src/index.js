@@ -3,72 +3,130 @@ const join = require('path').join
 const fs = require('fs')
 
 const contents = fs.readFileSync(join(__dirname, 'grammar', 'cmd.ohm'))
-const grammar = ohm.grammar(contents)
+
 
 class Translator {
 	constructor() {
-		this.namespace = "test"
+		this.grammar = ohm.grammar(contents)
 
-		this.out = [] // of string
+		this.namespace = 'test'
+		this.selector = '@s'
 
-		this.semantics = grammar.createSemantics().addOperation('eval', {
-			Program: (data) => {
-				return data.eval()
+		let self = this
+		this.semantics = this.grammar.createSemantics().addOperation('parse', {
+			Program(sourceElement) {
+				return sourceElement.parse()
 			},
 
-			identifier: function(data) {
-				return data.eval()
-			},
-
-			identifierName: function(data) {
+			identifierName(parts) {
 				return this.sourceString
 			},
 
-			identifierPart: function(data) {
-				return data
+			selector(_, type) {
+				return type.parse()
 			},
 
-		  number: function(data) {
-		  	console.log("number")
-		    return parseInt(chars, 10);
-		  },
+			SelectorBlock(begin, selector, block, end) {
+				self.updateSelector(selector.sourceString)
 
-			InternalAssignment: function(target, seperator, value) {
-				let r
+				let name = `${self.namespace}:as/${selector.parse()}`
 
-				switch(target.eval()) {
+				return `execute as ${selector.sourceString} run function ${name}
+
+# ${name}.mcfunction 
+${block.parse()}`
+			},
+
+			ConditionalIf(_, target, comparator, value, block) {
+				return `execute if score @s ${target.parse()} matches ${self.toRange(comparator.parse(), value.parse())}`
+			},
+
+			StatementList(statments) {
+				let out = []
+
+				for(let child of statments.children) {
+					out.push(child.parse())
+				}
+				return out.join("\n")
+			},
+
+			VariableDeclaration(modifier, target, _, value) {
+				return `scoreboard players set @s ${target.parse()} ${value.parse()}`
+			},
+
+			InternalAssignment(target, _, value) {
+				let res
+
+				switch(target.parse()) {
 					case 'namespace':
-						updateNamespace(value.eval())
+						res = self.updateNamespace(value.parse())
 						break;
 					default:
+						res = ''
 						break;
 				}
+
+				return res
 			},
 
-			raw: function(open, data, close) {
-				console.log(data)
+			Statement(item) {
+				return item.parse()
+			},
+
+			comparator(not, greater, equal, equals) {
 				return this.sourceString
 			},
 
-			_terminal: function() {
-				console.log("_terminal")
+			letter(char) {
+				return this.sourceString
+			},
+
+			number(char) {
 				return this.sourceString
 			}
 		})
 	}
 
-	updateNamespace(string) {
-		this.namespace = string
-		this.out.push(`# namespace: ${string}`)
+	toRange(comparator, value) {
+		let out
+
+		console.log(comparator)
+
+		switch (comparator) {
+			case '>':
+				out = `${value}..`
+				break
+			case '<':
+				out = `..${value}`
+				break
+			case '==':
+				out = value
+				break
+			default:
+				console.warn("Unknown comparator, using exact")
+				break;
+		}
+
+		console.log(out)
+		return out
+	}
+
+	updateNamespace(value) {
+		this.namespace = value
+		return `# data/${value}`
+	}
+
+	updateSelector(value) {
+		this.selector = value
 	}
 
 	parse(input) {
 		let match
 		let result
 
-		match = grammar.match(input)
+		match = this.grammar.match(input)
 		if (match.succeeded()) {
-	  	result = this.semantics(match).eval()
+	  	result = this.semantics(match).parse()
 		} else {
 	  	result = match.message
 		}
@@ -76,11 +134,21 @@ class Translator {
 	}
 }
 
+let out
+let ppOut
+
 out = new Translator().parse(`
 
 namespace: click
 
+do as @a
+	if clicked > 0 do
+	end
 
-`)[0]
-ppOut = JSON.stringify(out, null, '  ')
-console.log(ppOut)
+	clicked = 0
+	clicked = 1
+end
+
+`).join('\n')
+// out = JSON.stringify(out, null, '  ')
+console.log(out)
