@@ -6,6 +6,14 @@ interface BlockInfo {
 	selector: string
 }
 
+interface DefInfo {
+	[index: string]: {
+		type: string
+		selector: string
+		data: Function
+	}
+}
+
 export class Translator {
 	namespace: string
 	path: string[]
@@ -15,13 +23,22 @@ export class Translator {
 	// this should help when checking if a block is in
 	// a definition or if it's anonymous
 	blockInfo: BlockInfo[]
-
+	defs: DefInfo
 	io
 
 	constructor() {
 		this.namespace = 'test'
 		this.path = ['main']
 		this.blockInfo = [{type: 'main', selector: '@s'}]
+		this.defs = {
+			print: {
+				type: '$stdlib',
+				selector: '$none',
+				data: (node) => {
+					this.add(`tellraw @s "${node.args.join(' ')}"`)
+				}
+			}
+		}
 		this.io = {}
 	}
 
@@ -76,6 +93,30 @@ export class Translator {
 		this.blockInfo.pop()
 	}
 
+	// TODO: Add better warning messages and logging
+	walkCall(node: AST.Call) {
+		if(node.name in this.defs) {
+			let defined = this.defs[node.name]
+
+			if(defined.type == '$stdlib' || defined.type == '$macro') {
+				defined.data(node)
+			} else {
+				this.callMethod(node.name, defined.selector, node.args)
+			}
+		} else {
+			this.callMethod(node.name)
+		}
+	}
+
+	callMethod(name: string, selector?: string, args?: string[]) {
+		if(args != undefined) {
+			console.warn(`Arguments are not yet supported when calling a non stdlib method '${name}(${args.join(", ")})'`)
+		}
+
+		let exec = this.genExecute(name, selector)
+		this.add(exec)
+	}
+
 	walkBlock(node: AST.Block) {
 		if(last(this.blockInfo).type != "def") {
 			this.blockInfo.push({type: 'block', selector: '$none'})
@@ -109,11 +150,11 @@ export class Translator {
 		this.io[this.namespace][path].push(value)
 	}
 
-	genPath(value: string) {
+	genPath(value: string = last(this.path)) {
 		return `${this.namespace}:${value}`
 	}
 
-	updateWorkingFile(path: string = last(this.path), selector = this.currentSelector()) {
+	genExecute(path: string = last(this.path), selector?) {
 		let as = ''
 
 		if(selector != undefined && selector != '$inherit' && selector != '$none') {
@@ -121,12 +162,18 @@ export class Translator {
 		} else if (selector == '$none') {
 			as = ''
 		}
+		
+		return `execute ${as}run function ${this.genPath(path)}`
+	}
+
+	updateWorkingFile(path: string = last(this.path), selector = this.currentSelector()) {
+		let exec = this.genExecute(path, selector)
 
 		switch (last(this.blockInfo).type) {
 			case "def":
 				break
 			default:
-				this.add(`execute ${as}run function ${this.genPath(path)}`)
+				this.add(exec)
 				break;
 		}
 		this.path.push(path)
