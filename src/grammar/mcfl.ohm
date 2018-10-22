@@ -1,4 +1,4 @@
-CMD2 {
+MCFL {
   Program
     = SourceElement*
     

@@ -5,7 +5,7 @@ const { Exporter } = require('./exporter')
 const { Translator } = require('./translator')
 
 // Output
-const cmd = fs.readFileSync(join('test.cmd'), 'utf8');
+const cmd = fs.readFileSync(join('test.mcfl'), 'utf8');
 const ast = new Parser().parse(cmd);
 const translator = new Translator()
 const mcfunction = translator.walk(ast)

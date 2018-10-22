@@ -9,3 +9,7 @@ do as `@a`
   `say h2`
   `tellraw @s ["",{"text":"Hello","color":"green","bold":true},{"text":" ","color":"none","bold":false},{"text":"World","color":"red","bold":true}]`
 end
+
+do
+	`anon`
+end

@@ -1,7 +1,7 @@
 const ohm = require('ohm-js')
 const fs = require('fs')
 const { join } = require('path')
-const contents = fs.readFileSync(join(__dirname, 'grammar', 'cmd.ohm'), 'utf8')
+const contents = fs.readFileSync(join(__dirname, 'grammar', 'mcfl.ohm'), 'utf8')
 const AST = require('./ast')
 
 

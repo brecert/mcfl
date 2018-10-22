@@ -12,7 +12,7 @@ export class Exporter {
 			console.log(namespace)
 
 			for(let path in namespaces[namespace]) {
-				this.add(`# ${namespace}:${path}`)
+				this.add(`\n# ${namespace}:${path}`)
 				let commands = namespaces[namespace][path]
 				this.add(commands.join('\n'))
 			}
