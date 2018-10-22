@@ -15,12 +15,20 @@ export class Parser {
     const self = this
     
     this.semantics = this.grammar.createSemantics().addOperation( 'parse', {
-      Block(begin, selector, value, statement, end) {
-        return new AST.Block(statement.parse())
+      LocalAssignment(target, _, value) {
+        return new AST.LocalAssignment(target.parse(), value.parse())
+      },
+
+      Block(begin, _, selector, statement, end) {
+        return new AST.Block(statement.parse(), selector.parse()[0].value)
       },
       
       raw(begin, content, end) {
         return new AST.Raw(content.sourceString)
+      },
+
+      ident(letter, alnum) {
+        return this.sourceString
       }
     });
   }

@@ -4,11 +4,22 @@ export abstract class ASTNode {
  	}
 }
 
+export class LocalAssignment extends ASTNode {
+	target
+	value
+
+	constructor(target, value) {
+		super('LocalAssignment')
+		this.target = target
+		this.value = value
+	}
+}
+
 export class Block extends ASTNode {
 	statement
 	selector
 
-	constructor(statement, selector = '@s') {
+	constructor(statement, selector?) {
 		super('Block')
 		this.statement = statement
 		this.selector = selector

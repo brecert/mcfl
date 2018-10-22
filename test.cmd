@@ -1,3 +1,5 @@
+namespace: click
+
 do as `@a`
   `say hi`
   `say h2`
