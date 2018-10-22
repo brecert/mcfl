@@ -35,18 +35,14 @@ export class Translator {
 		if( Array.isArray(node) ) {
 			return this.walkArray(node)
 		} else {
-			switch (node.astName) {
-				case "Block":
-					return this.walkBlock(node)
-				case "Definition":
-					return this.walkDefinition(node)
-				case "LocalAssignment":
-					return this.walkLocalAssignment(node)
-				case "Raw":
-					return this.walkRaw(node)
-				default:
-					throw `Unknown node type ${JSON.stringify(node)}`
-					break;
+			if(node.astName === undefined) {
+				throw `Unknown node type ${node.astName} with data ${JSON.stringify(node)}`
+			}
+
+			if(`walk${node.astName}` in this) {
+				this[`walk${node.astName}`](node)
+			} else {
+				throw `No walk set for '${node.astName}'`
 			}
 		}
 	}

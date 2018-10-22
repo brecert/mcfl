@@ -1,9 +1,12 @@
 MCFL {
   Program
     = SourceElement*
-    
+
+  withIn =
+  
   SourceElement
-    = LocalAssignment
+    = Call
+    | LocalAssignment
     | Definition
     | Statement
 
@@ -17,6 +20,13 @@ MCFL {
 
   Definition
     = "def" name Block
+    
+  Call (a call)
+    = name "(" ListOf<ArgumentInput<withIn>, ","> ")" -- paramaterized
+    | "run " name -- run
+    
+  ArgumentInput<guardIn>
+    = name
     
   Block
     = "do" ("as" value)? Statement* "end"
@@ -33,7 +43,7 @@ MCFL {
     | raw
 
   ident (an identifier)
-    = letter alnum*
+    = alnum*
 
   number  (a number)
     = digit* "." digit+  -- fract

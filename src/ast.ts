@@ -26,6 +26,17 @@ export class Definition extends ASTNode {
 	}
 }
 
+export class Call extends ASTNode {
+	name
+	args
+
+	constructor(name, args?) {
+		super('Call')
+		this.name = name
+		this.args = args
+	}
+}
+
 export class Block extends ASTNode {
 	statement
 	selector

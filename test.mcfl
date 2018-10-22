@@ -5,11 +5,8 @@ def hello do
 end
 
 do as `@a`
+  hello(bob, ross)
+  run hello
   `say hi`
   `say h2`
-  `tellraw @s ["",{"text":"Hello","color":"green","bold":true},{"text":" ","color":"none","bold":false},{"text":"World","color":"red","bold":true}]`
-end
-
-do
-	`anon`
 end

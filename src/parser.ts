@@ -23,6 +23,14 @@ export class Parser {
         return new AST.Definition(name.parse(), block.parse())
       },
 
+      Call_paramaterized(name, begin, args, end) {
+        return new AST.Call(name.parse(), args.parse())
+      },
+
+      Call_run(run, name) {
+        return new AST.Call(name.parse())
+      },
+
       Block(begin, _, selector, statement, end) {
         let sel = selector.parse()
         if(0 in sel) {
@@ -36,8 +44,16 @@ export class Parser {
         return new AST.Raw(content.sourceString)
       },
 
-      ident(letter, alnum) {
+      ident(alnum) {
         return this.sourceString
+      },
+
+      NonemptyListOf(x, seperator, xs) {
+        return [x.parse()].concat(xs.parse())
+      }
+    }).addOperation('isA(type)', {
+      _nonterminal(children) {
+        return this.astName === this.args.type
       }
     });
   }
