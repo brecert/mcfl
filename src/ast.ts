@@ -1,6 +1,6 @@
 export abstract class ASTNode {
-	constructor(public name: string) {
-		this.name = name
+	constructor(public astName: string) {
+		this.astName = astName
  	}
 }
 
@@ -12,6 +12,17 @@ export class LocalAssignment extends ASTNode {
 		super('LocalAssignment')
 		this.target = target
 		this.value = value
+	}
+}
+
+export class Definition extends ASTNode {
+	name
+	block
+
+	constructor(name, block) {
+		super('Definition')
+		this.name = name
+		this.block = block
 	}
 }
 

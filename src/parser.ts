@@ -19,8 +19,17 @@ export class Parser {
         return new AST.LocalAssignment(target.parse(), value.parse())
       },
 
+      Definition(def, name, block) {
+        return new AST.Definition(name.parse(), block.parse())
+      },
+
       Block(begin, _, selector, statement, end) {
-        return new AST.Block(statement.parse(), selector.parse()[0].value)
+        let sel = selector.parse()
+        if(0 in sel) {
+          return new AST.Block(statement.parse(), sel[0].value)
+        } else {
+          return new AST.Block(statement.parse())
+        }
       },
       
       raw(begin, content, end) {

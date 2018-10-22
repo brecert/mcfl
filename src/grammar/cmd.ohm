@@ -4,6 +4,7 @@ CMD2 {
     
   SourceElement
     = LocalAssignment
+    | Definition
     | Statement
 
   Statement

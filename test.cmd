@@ -1,5 +1,9 @@
 namespace: click
 
+def hello do
+  `say hello world`
+end
+
 do as `@a`
   `say hi`
   `say h2`

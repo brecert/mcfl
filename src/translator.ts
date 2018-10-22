@@ -20,9 +20,11 @@ export class Translator {
 		if( Array.isArray(node) ) {
 			return this.walkArray(node)
 		} else {
-			switch (node.name) {
+			switch (node.astName) {
 				case "Block":
 					return this.walkBlock(node)
+				case "Definition":
+					return this.walkDefinition(node)
 				case "LocalAssignment":
 					return this.walkLocalAssignment(node)
 				case "Raw":
@@ -54,8 +56,16 @@ export class Translator {
 		}
 	}
 
+	walkDefinition(node: AST.Definition) {
+		this.updatePath(node.name)
+		this.walk(node.block)
+		this.path.pop()
+	}
+
 	walkBlock(node: AST.Block) {
-		this.updateSelector(node.selector)
+		if(node.selector != undefined) {
+			this.updateSelector(node.selector)
+		}
 		return this.walk(node.statement)
 	}
 
@@ -84,6 +94,10 @@ export class Translator {
 
 	updateWorkingFile(path: string = this.path.slice(-1)[0]) {
 		this.add(`execute as ${this.selector} run function ${this.genPath(path)}`)
+		this.path.push(path)
+	}
+
+	updatePath(path: string) {
 		this.path.push(path)
 	}
 
