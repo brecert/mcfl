@@ -11,11 +11,11 @@ contains commands or other non-implemented features
 ### blocks
 ```
 do
-	`command`
+  `command`
 end
 
 do as `@a`
-	`command`
+  `command`
 end
 ```
 
@@ -42,11 +42,11 @@ a non working theoretical example
 namespace: click
 
 macro print(values: raw) do
-	`tellraw @s "#{values}"`
+  `tellraw @s "#{values}"`
 end
 
 def on_click do
-	print(hello world)
+  print(hello world)
 end
 
 do as @a

@@ -1,26 +1,26 @@
 export class Exporter {
-	dataTree
-	io: string[]
+  dataTree
+  io: string[]
 
-	constructor(dataTree) {
-		this.dataTree = dataTree
-		this.io = []
-	}
+  constructor(dataTree) {
+    this.dataTree = dataTree
+    this.io = []
+  }
 
-	consoleExport(namespaces = this.dataTree) {
-		for(let namespace in namespaces) {
-			console.log(namespace)
+  consoleExport(namespaces = this.dataTree) {
+    for(let namespace in namespaces) {
+      console.log(namespace)
 
-			for(let path in namespaces[namespace]) {
-				this.add(`\n# ${namespace}:${path}`)
-				let commands = namespaces[namespace][path]
-				this.add(commands.join('\n'))
-			}
-		}
-	}
+      for(let path in namespaces[namespace]) {
+        this.add(`\n# ${namespace}:${path}`)
+        let commands = namespaces[namespace][path]
+        this.add(commands.join('\n'))
+      }
+    }
+  }
 
-	private add(value: string) {
-		this.io.push(value)
-	}
+  private add(value: string) {
+    this.io.push(value)
+  }
 }
 
