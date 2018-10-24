@@ -1,14 +1,11 @@
 namespace: click
 
-def hello do
-  `say hello world`
-end
+def setup do
+	print `Resetting clicked`
+	del clicked
+	let clicked : `minecraft.used:minecraft.carrot_on_a_stick`
 
-do as `@a`
-  hello(bob, ross)
-  run hello
-
-  print(hello)
-  `say hi`
-  `say h2`
+	print `Resetting money`
+	del money
+	let money
 end

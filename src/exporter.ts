@@ -9,8 +9,6 @@ export class Exporter {
 
   consoleExport(namespaces = this.dataTree) {
     for(let namespace in namespaces) {
-      console.log(namespace)
-
       for(let path in namespaces[namespace]) {
         this.add(`\n# ${namespace}:${path}`)
         let commands = namespaces[namespace][path]

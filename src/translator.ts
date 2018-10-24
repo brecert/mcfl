@@ -1,16 +1,24 @@
 import * as AST from './ast'
 import { last } from './util/last'
 
+
 interface BlockInfo {
   type: string
   selector: string
+}
+
+interface ArgInfo {
+  name: string
+  type: string[]
+  splat?: boolean
 }
 
 interface DefInfo {
   [index: string]: {
     type: string
     selector: string
-    data: Function
+    args: ArgInfo[]
+    run: Function
   }
 }
 
@@ -24,6 +32,7 @@ export class Translator {
   // a definition or if it's anonymous
   blockInfo: BlockInfo[]
   defs: DefInfo
+  safe: boolean
   io
 
   constructor() {
@@ -34,12 +43,30 @@ export class Translator {
       print: {
         type: '$stdlib',
         selector: '$none',
-        data: (node) => {
-          this.add(`tellraw @s "${node.args.join(' ')}"`)
+        args: [{name: "content", type: ["Raw"], splat: true}],
+        run: (node, args) => {
+          this.add(`tellraw @s "${args.content.map(arg => this.safeWalk(arg)).join(' ')}"`)
+        }
+      },
+
+      del: {
+        type: '$stdlib',
+        selector: '$none',
+        args: [{name: 'objective', type: ['$any']}],
+        run: (node, args) => {
+          this.add(`scoreboard objectives remove ${args.objective}`)
         }
       }
     }
     this.io = {}
+  }
+
+  // TODO: Make the not needed
+  safeWalk(node) {
+    this.safe = false
+    let res = this.walk(node)
+    this.safe = true
+    return res
   }
 
   // Top level walk to other walks to make it easier
@@ -51,17 +78,29 @@ export class Translator {
 
     if( Array.isArray(node) ) {
       return this.walkArray(node)
+    } else if(typeof node === "number") {
+      return this.walkNumber(node)
+    } else if(typeof node === "string") {
+      return this.walkString(node)
     } else {
       if(node.astName === undefined) {
         throw `Unknown node type ${node.astName} with data ${JSON.stringify(node)}`
       }
 
       if(`walk${node.astName}` in this) {
-        this[`walk${node.astName}`](node)
+        return this[`walk${node.astName}`](node)
       } else {
         throw `No walk set for '${node.astName}'`
       }
     }
+  }
+
+  walkNumber(number) {
+    return number
+  }
+
+  walkString(string) {
+    return string
   }
 
   // Walks an array of AST Nodes
@@ -74,13 +113,30 @@ export class Translator {
     return result
   }
 
-  walkLocalAssignment(node: AST.LocalAssignment) {
+  walkDefaultAssignment(node: AST.DefaultAssignment) {
+    if(typeof node.value === "number") {
+      this.assign(node.target, node.value)
+    } else if (node.value.astName === "Raw") {
+      this.assign(node.target, node.value.value, "operation")
+    } else {
+      throw `Unknown assignment with type ${typeof node.value}(astName: ${node.value.astName})`
+    }
+  }
+
+  walkInitialAssignment(node: AST.InitialAssignment) {
+    this.add(`scoreboard objectives add ${node.target}`)
+    if(node.criteria != undefined) {
+      this.add(` ${node.criteria}`, false)
+    }
+  }
+
+  walkPrivateAssignment(node: AST.PrivateAssignment) {
     switch (node.target) {
       case "namespace":
         this.updateNamespace(node.value)
         break
       default:
-        throw `unknown local assignment ${node.target}`
+        throw `unknown private assignment ${node.target}`
         break
     }
   }
@@ -99,18 +155,59 @@ export class Translator {
       let defined = this.defs[node.name]
 
       if(defined.type == '$stdlib' || defined.type == '$macro') {
-        defined.data(node)
+        this.callLib(node)
       } else {
         this.callMethod(node.name, defined.selector, node.args)
       }
     } else {
-      this.callMethod(node.name)
+      this.callMethod(node.name, '$none', node.args)
     }
+  }
+
+  // TODO: Remove large swaths of duplicate code and clean up
+  callLib(node) {
+    let def, args
+
+    def = this.defs[node.name]
+    args = {}
+
+    for(let arg in def.args) {
+      let defArg = def.args[arg]
+      let nodeArg = node.args[arg]
+
+      if(defArg.splat) {
+        let splat = node.args.slice(arg)
+
+        for(let splattedArg of splat) {
+          if(defArg.type.includes(nodeArg.astName) || defArg.type === '$any')  {
+            if(!(defArg.name in args)) {
+              args[defArg.name] = []
+            }
+            args[defArg.name].push(nodeArg)
+          } else {
+            throw `Method '${node.name}' accepts types \`${defArg.type.join(" | ")}\` not '${nodeArg.astName}' for argument '${defArg.name}'`
+          }
+        }
+      } else {
+        if(defArg.type.includes(nodeArg.astName) || defArg.type == '$any') {
+          if(!(defArg.name in args)) {
+            args[defArg.name] = []
+          }
+
+          args[defArg.name].push(nodeArg)
+        } else {
+          throw `Method '${node.name}' accepts types \`${defArg.type.join(" | ")}\` not '${nodeArg.astName}' for argument '${defArg.name}'`
+        }
+      }
+
+    }
+
+    def.run(node, args)
   }
 
   callMethod(name: string, selector?: string, args?: string[]) {
     if(args != undefined) {
-      console.warn(`Arguments are not yet supported when calling a non stdlib method '${name}(${args.join(", ")})'`)
+      throw `Arguments are not yet supported when calling a non stdlib method '${name}(${args.join(", ")})'\nPlease use 'run ${name}' instead.`
     }
 
     let exec = this.genExecute(name, selector)
@@ -136,7 +233,11 @@ export class Translator {
   // 
   // This handles most if not all of the work
   // involving paths and namespacing for the exporter
-  add<T>(value: T) {
+  add<T>(value: T, newline: boolean = true) {
+    if(!this.safe) {
+      return value
+    }
+
     let path = last(this.path)
 
     if(!(this.namespace in this.io)) {
@@ -147,7 +248,14 @@ export class Translator {
       this.io[this.namespace][path] = []
     }
 
-    this.io[this.namespace][path].push(value)
+    let result
+    result = value
+
+    if(newline === false) {
+      result = [this.io[this.namespace][path].pop(), value].join('')
+    }
+
+    this.io[this.namespace][path].push(result)
   }
 
   genPath(value: string = last(this.path)) {
@@ -155,7 +263,7 @@ export class Translator {
   }
 
   genExecute(path: string = last(this.path), selector?) {
-    let as = ''
+    let as
 
     if(selector != undefined && selector != '$inherit' && selector != '$none') {
       as = `as ${selector} `
@@ -163,7 +271,11 @@ export class Translator {
       as = ''
     }
     
-    return `execute ${as}run function ${this.genPath(path)}`
+    if(as === undefined) {
+      return `function ${this.genPath(path)}`
+    } else {
+      return `execute ${as}run function ${this.genPath(path)}`
+    }
   }
 
   updateWorkingFile(path: string = last(this.path), selector = this.currentSelector()) {
@@ -187,6 +299,14 @@ export class Translator {
 
   updateNamespace(name: string) {
     this.namespace = name
+  }
+
+  assign(target, value, type?, operation = '=', sourceSelector = '@s') {
+    if(type === "operation") {
+      this.add(`scoreboard players operation @s ${target} ${operation} ${sourceSelector} ${value}`)
+    } else {
+      this.add(`scoreboard players set @s ${target} ${value}`)
+    }
   }
 
   addBlock(name: string, selector = '$none') {

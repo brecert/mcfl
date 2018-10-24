@@ -3,10 +3,15 @@ MCFL {
     = SourceElement*
 
   withIn =
-  
+
+  reserved
+    = "let" | "const"
+    | "def" | "end" | "do"
+    | "run"
+
   SourceElement
-    = Call
-    | LocalAssignment
+    = Assignment
+    | Call
     | Definition
     | Statement
 
@@ -15,21 +20,40 @@ MCFL {
     | raw
     | SourceElement
 
-  LocalAssignment
+  Assignment
+    = DefaultAssignment
+    | InitialAssignment
+    | PrivateAssignment
+
+  PrivateAssignment
     = name ":" name
+
+  InitialAssignment
+    = ("let" | "const") name (":" raw)?
+    
+  DefaultAssignment
+    = name "=" value
 
   Definition
     = "def" name Block
     
   Call (a call)
     = name "(" ListOf<ArgumentInput<withIn>, ","> ")" -- paramaterized
+    | name ListOf<ArgumentInput<withIn>, ","> -- optional_paramaterized
     | "run " name -- run
     
   ArgumentInput<guardIn>
     = name
+    | raw
     
   Block
-    = "do" ("as" value)? Statement* "end"
+    = begin ("as" value)? Statement* close
+
+  begin
+    = "do"
+    
+  close
+    = "end"
 
   raw (a raw literal)
     = "`" (~"`" any)* "`"
@@ -39,11 +63,11 @@ MCFL {
     | raw
 
   name  (a name)
-    = ident
+    = ~reserved ident
     | raw
 
   ident (an identifier)
-    = alnum*
+    = (alnum | "_" | ".")+
 
   number  (a number)
     = digit* "." digit+  -- fract
