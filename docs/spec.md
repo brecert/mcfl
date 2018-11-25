@@ -47,4 +47,13 @@ end
 tellraw @a "hello world!"
 ```
 
+## Constant
+```go
+const TEN = 10
+```
+
+```
+scoreboard objectives add constant dummy
+scoreboard players set #TEN const 10
+```
 
