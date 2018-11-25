@@ -1,0 +1,25 @@
+namespace: afk
+
+def setup do
+  del afk
+  let afk : `trigger`
+  `scoreboard players enable @a afk`
+
+  del isAfk
+  let isAfk
+  do as `@a`
+    isAfk = -1
+  end
+end
+
+def check_afk do as `@a[scores={afk=1..}]`
+  afk = 0
+  if isAfk >= 1 do
+    `tellraw @a ["",{"selector":"@s","color":"gray"},{"text":" is now afk","color":"gray"}]`
+    isAfk = -1
+  end
+  if isAfk <= -1 do
+    `tellraw @a ["",{"selector":"@s","color":"gray"},{"text":" is no longer afk","color":"gray"}]`
+    isAfk = 1
+  end
+end
