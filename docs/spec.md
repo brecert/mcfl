@@ -57,3 +57,13 @@ scoreboard objectives add constant dummy
 scoreboard players set #TEN const 10
 ```
 
+## Automatic ~~casting of~~ text components
+```go
+const TEN = 10
+tellraw "Ten is #{TEN}"
+```
+
+```
+tellraw @s ["ten is ",{"score":{"name":"TEN","objective":"constant"}}]
+```
+
