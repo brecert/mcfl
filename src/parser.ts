@@ -67,9 +67,7 @@ export class Parser {
 
         Block(begin, _, selector, statement, end) {
           let sel = selector.parse()
-          console.log(sel)
           if (0 in sel) {
-            console.log(sel, '0')
             return new AST.Block(statement.parse(), sel[0].value)
           } else {
             return new AST.Block(statement.parse())

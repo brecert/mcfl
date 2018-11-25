@@ -278,8 +278,6 @@ export class Translator {
   genExecute(path: string = last(this.path), selector?) {
     let as
 
-    console.log(selector, path)
-
     if (
       selector != undefined &&
       selector != '$inherit' &&
