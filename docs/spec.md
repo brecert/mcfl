@@ -61,6 +61,7 @@ scoreboard players set #TEN const 10
 ```go
 const TEN = 10
 tellraw "Ten is #{TEN}"
+tellraw "The player executing this is #{@s}"
 ```
 
 ```
