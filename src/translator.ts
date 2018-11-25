@@ -33,6 +33,7 @@ export class Translator {
   defs: DefInfo
   safe: boolean
   io
+  selectors
 
   constructor() {
     this.namespace = 'test'
@@ -59,6 +60,8 @@ export class Translator {
       },
     }
     this.io = {}
+
+    this.selectors = {}
   }
 
   // TODO: Make the not needed
@@ -147,6 +150,7 @@ export class Translator {
 
   walkDefinition(node: AST.Definition) {
     this.blockInfo.push({ type: 'def', selector: '$none' })
+    this.selectors[node.name] = node.block.selector
     this.updatePath(node.name, () => {
       this.walk(node.block)
     })
@@ -164,7 +168,7 @@ export class Translator {
         this.callMethod(node.name, defined.selector, node.args)
       }
     } else {
-      this.callMethod(node.name, '$none', node.args)
+      this.callMethod(node.name, this.selectors[node.name], node.args)
     }
   }
 
@@ -225,7 +229,7 @@ export class Translator {
 
   walkBlock(node: AST.Block) {
     if (last(this.blockInfo).type != 'def') {
-      this.blockInfo.push({ type: 'block', selector: '$none' })
+      this.blockInfo.push({ type: 'block', selector: (node.selector) ? node.selector : '$none' })
       this.updateSelector(node.selector)
       this.blockInfo.pop()
     }
@@ -273,6 +277,8 @@ export class Translator {
 
   genExecute(path: string = last(this.path), selector?) {
     let as
+
+    console.log(selector, path)
 
     if (
       selector != undefined &&

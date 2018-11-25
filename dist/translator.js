@@ -26,6 +26,7 @@ class Translator {
             },
         };
         this.io = {};
+        this.selectors = {};
     }
     // TODO: Make the not needed
     safeWalk(node) {
@@ -104,6 +105,7 @@ class Translator {
     }
     walkDefinition(node) {
         this.blockInfo.push({ type: 'def', selector: '$none' });
+        this.selectors[node.name] = node.block.selector;
         this.updatePath(node.name, () => {
             this.walk(node.block);
         });
@@ -121,7 +123,7 @@ class Translator {
             }
         }
         else {
-            this.callMethod(node.name, '$none', node.args);
+            this.callMethod(node.name, this.selectors[node.name], node.args);
         }
     }
     // TODO: Remove large swaths of duplicate code and clean up
@@ -169,7 +171,7 @@ class Translator {
     }
     walkBlock(node) {
         if (last_1.last(this.blockInfo).type != 'def') {
-            this.blockInfo.push({ type: 'block', selector: '$none' });
+            this.blockInfo.push({ type: 'block', selector: (node.selector) ? node.selector : '$none' });
             this.updateSelector(node.selector);
             this.blockInfo.pop();
         }
@@ -206,6 +208,7 @@ class Translator {
     }
     genExecute(path = last_1.last(this.path), selector) {
         let as;
+        console.log(selector, path);
         if (selector != undefined &&
             selector != '$inherit' &&
             selector != '$none') {

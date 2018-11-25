@@ -1,0 +1,10 @@
+namespace: awdp
+
+def merge_data do as `@e[type=!player]`
+    print `merging data`
+    `data merge entity @s {HandDropChances:[1.0F,1.0F],ArmorDropChances:[1.0F,1.0F,1.0F,1.0F]}`
+end
+
+def main do
+    run merge_data
+end
