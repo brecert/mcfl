@@ -1,0 +1,6 @@
+
+def main do
+	do as `@e`
+		`statements`
+	end
+end

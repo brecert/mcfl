@@ -1,9 +1,6 @@
-#!/usr/bin/env node
-
 const fs = require('fs-extra')
 const path = require('path')
-
-const mcfl = require('../dist/index')
+const mcfl = require('./index')
 
 require('yargs')
   .usage('$0 <cmd> [args]')

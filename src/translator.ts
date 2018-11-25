@@ -60,7 +60,7 @@ export class Translator {
       },
     }
     this.io = {}
-
+    this.safe = true
     this.selectors = {}
   }
 
@@ -231,10 +231,13 @@ export class Translator {
     if (last(this.blockInfo).type != 'def') {
       this.blockInfo.push({ type: 'block', selector: (node.selector) ? node.selector : '$none' })
       this.updateSelector(node.selector)
+      this.walk(node.statement)
+      this.blockInfo.pop()
+    } else {
+      this.blockInfo.push({ type: 'block', selector: (node.selector) ? node.selector : '$none' })
+      this.walk(node.statement)      
       this.blockInfo.pop()
     }
-
-    this.walk(node.statement)
   }
 
   walkRaw(node: AST.Raw) {
