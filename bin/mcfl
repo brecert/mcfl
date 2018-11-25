@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+
+const fs = require('fs-extra')
+const path = require('path')
+
+const mcfl = require('../lib/index')
+
+require('yargs')
+  .usage('$0 <cmd> [args]')
+  .options({
+  	'out': {
+  		alias: 'o',
+  		describe: 'output folder',
+  		demandOption: true
+  	}
+  })
+  .command({
+  	command: ['transpile <file>'],
+  	aliases: ['t'],
+  	desc: 'transpile an mcfl file to a datapack',
+  	builder: (yargs) => {
+	    yargs.positional('file', {
+	      describe: 'the file to transpile',
+	      type: 'string'
+    	})
+  	},
+  	check: (yargs) => {
+			fs.existsSync(yargs.file)
+  	},
+  	handler: (yargs) => {
+  		console.info(`transpiling ${yargs.file}`);
+  		let exporter = mcfl.transpileString(fs.readFileSync(yargs.file, 'utf8'))
+  		exporter.exportFiles(yargs.out)
+  	}
+  })
+  .demandCommand(1, 'You need at least one command before moving on')
+  .help()
+  .argv
