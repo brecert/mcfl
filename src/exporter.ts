@@ -29,17 +29,17 @@ export class Exporter {
   }
 
   exportFiles(out, namespaces = this.dataTree) {
+    this.io = []
+
     fs.ensureDir(out).catch(console.error)
     fs.writeFile(join(out, 'pack.mcmeta'), JSON.stringify(this.pack)).catch(
       console.error
     )
 
     for (let namespace in namespaces) {
-      this.io = []
       const namespacePath = join(out, 'data', namespace)
       for (let file in namespaces[namespace]) {
         const filePath = join(namespacePath, `${file}.mcfunction`)
-        const commands = namespaces[namespace][file]
 
         switch (file) {
           case 'main':
@@ -52,11 +52,10 @@ export class Exporter {
             break
         }
 
-        this.add(commands.join('\n'))
-
+        const commands = namespaces[namespace][file]
         fs.ensureFile(filePath)
           .then(() => {
-            fs.writeFile(filePath, this.io.join('\n')).catch(console.error)
+            fs.writeFile(filePath, commands.join('\n')).catch(console.error)
           })
           .catch(console.error)
       }
@@ -64,6 +63,8 @@ export class Exporter {
   }
 
   consoleExport(namespaces = this.dataTree) {
+    this.io = []
+
     for (let namespace in namespaces) {
       for (let path in namespaces[namespace]) {
         this.add(`\n# ${namespace}:${path}`)

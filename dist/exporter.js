@@ -18,14 +18,13 @@ class Exporter {
         };
     }
     exportFiles(out, namespaces = this.dataTree) {
+        this.io = [];
         fs_extra_1.default.ensureDir(out).catch(console.error);
         fs_extra_1.default.writeFile(path_1.join(out, 'pack.mcmeta'), JSON.stringify(this.pack)).catch(console.error);
         for (let namespace in namespaces) {
-            this.io = [];
             const namespacePath = path_1.join(out, 'data', namespace);
             for (let file in namespaces[namespace]) {
                 const filePath = path_1.join(namespacePath, `${file}.mcfunction`);
-                const commands = namespaces[namespace][file];
                 switch (file) {
                     case 'main':
                         this.createTag(out, namespace, 'main', 'tick');
@@ -36,16 +35,17 @@ class Exporter {
                     default:
                         break;
                 }
-                this.add(commands.join('\n'));
+                const commands = namespaces[namespace][file];
                 fs_extra_1.default.ensureFile(filePath)
                     .then(() => {
-                    fs_extra_1.default.writeFile(filePath, this.io.join('\n')).catch(console.error);
+                    fs_extra_1.default.writeFile(filePath, commands.join('\n')).catch(console.error);
                 })
                     .catch(console.error);
             }
         }
     }
     consoleExport(namespaces = this.dataTree) {
+        this.io = [];
         for (let namespace in namespaces) {
             for (let path in namespaces[namespace]) {
                 this.add(`\n# ${namespace}:${path}`);

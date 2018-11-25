@@ -14,11 +14,21 @@ import { Translator } from './translator'
 // const exported = exporter.consoleExport()
 // console.log(exporter.io.join("\n"))
 
-export function transpileString(str: string) {
+export function transpileString(str: string, debug: boolean = false) {
   const ast = new Parser().parse(str)
   const translator = new Translator()
   const mcfunction = translator.walk(ast)
+  if(debug) {
+  	console.log('--debug--')
+  	console.log(ast)
+  	console.log(translator.io)
+  	console.log(mcfunction)
+  }
   const exporter = new Exporter(translator.io)
+  if(debug) {
+    exporter.consoleExport()
+    console.log(exporter.io.join("\n"))
+  }
   return exporter
 }
 

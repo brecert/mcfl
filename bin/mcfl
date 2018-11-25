@@ -12,7 +12,12 @@ require('yargs')
   		alias: 'o',
   		describe: 'output folder',
   		demandOption: true
-  	}
+  	},
+    'debug': {
+      alias: 'd',
+      describe: 'debug?',
+      type: 'boolean'
+    }
   })
   .command({
   	command: ['transpile <file>'],
@@ -29,7 +34,7 @@ require('yargs')
   	},
   	handler: (yargs) => {
   		console.info(`transpiling ${yargs.file}`);
-  		let exporter = mcfl.transpileString(fs.readFileSync(yargs.file, 'utf8'))
+  		let exporter = mcfl.transpileString(fs.readFileSync(yargs.file, 'utf8'), yargs.debug)
   		exporter.exportFiles(yargs.out)
   	}
   })

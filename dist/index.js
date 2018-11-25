@@ -13,11 +13,21 @@ const translator_1 = require("./translator");
 // const exporter = new Exporter(translator.io)
 // const exported = exporter.consoleExport()
 // console.log(exporter.io.join("\n"))
-function transpileString(str) {
+function transpileString(str, debug = false) {
     const ast = new parser_1.Parser().parse(str);
     const translator = new translator_1.Translator();
     const mcfunction = translator.walk(ast);
+    if (debug) {
+        console.log('--debug--');
+        console.log(ast);
+        console.log(translator.io);
+        console.log(mcfunction);
+    }
     const exporter = new exporter_1.Exporter(translator.io);
+    if (debug) {
+        exporter.consoleExport();
+        console.log(exporter.io.join("\n"));
+    }
     return exporter;
 }
 exports.transpileString = transpileString;

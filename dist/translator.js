@@ -39,7 +39,7 @@ class Translator {
     //
     // The structure emulates method overloading
     walk(node) {
-        console.log(`walking: ${node.astName}`);
+        console.log(`walking: [array: ${Array.isArray(node)}] ${node.astName}`);
         if (Array.isArray(node)) {
             return this.walkArray(node);
         }
