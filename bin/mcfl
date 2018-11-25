@@ -3,7 +3,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 
-const mcfl = require('../lib/index')
+const mcfl = require('../dist/index')
 
 require('yargs')
   .usage('$0 <cmd> [args]')
