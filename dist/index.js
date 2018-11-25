@@ -1,7 +1,8 @@
-import { Parser } from './parser'
-import { Exporter } from './exporter'
-import { Translator } from './translator'
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const parser_1 = require("./parser");
+const exporter_1 = require("./exporter");
+const translator_1 = require("./translator");
 // // Output
 // const cmd = fs.readFileSync(join('./examples/afk.mcfl'), 'utf8');
 // const ast = new Parser().parse(cmd);
@@ -9,18 +10,16 @@ import { Translator } from './translator'
 // const mcfunction = translator.walk(ast)
 // // console.log(translator.io)
 // // console.log(mcfunction)
-
 // const exporter = new Exporter(translator.io)
 // const exported = exporter.consoleExport()
 // console.log(exporter.io.join("\n"))
-
-export function transpileString(str: string) {
-  const ast = new Parser().parse(str)
-  const translator = new Translator()
-  const mcfunction = translator.walk(ast)
-  const exporter = new Exporter(translator.io)
-  return exporter
+function transpileString(str) {
+    const ast = new parser_1.Parser().parse(str);
+    const translator = new translator_1.Translator();
+    const mcfunction = translator.walk(ast);
+    const exporter = new exporter_1.Exporter(translator.io);
+    return exporter;
 }
-
+exports.transpileString = transpileString;
 // const cmd = fs.readFileSync(join('./examples/bending.mcfl'), 'utf8')
 // transpileString(cmd).exportFiles('./test')

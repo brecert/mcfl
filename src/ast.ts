@@ -62,6 +62,37 @@ export class PrivateAssignment extends ASTNode implements Assignment {
   }
 }
 
+export class Macro extends ASTNode {
+  name
+  args
+  block
+
+  constructor(name, args, block) {
+    super('Macro')
+    this.name = name
+    this.args = args
+    this.block = block
+  }
+
+  toPrimitive() {
+    return this.name
+  }
+}
+
+export class MacroArgument extends ASTNode {
+  name
+  type: string
+  splat: boolean
+
+  constructor(name, type, splat) {
+    super('MacroArgument')
+  }
+
+  toPrimitive() {
+    return this.name
+  }
+}
+
 export class Definition extends ASTNode {
   name
   block
@@ -93,10 +124,7 @@ export class Call extends ASTNode {
 }
 
 export class Block extends ASTNode {
-  statement
-  selector
-
-  constructor(statement, selector?) {
+  constructor(public statement, public selector?) {
     super('Block')
     this.statement = statement
     this.selector = selector
@@ -104,6 +132,26 @@ export class Block extends ASTNode {
 
   toPrimitive() {
     return this.selector
+  }
+}
+
+export class StringLiteral extends ASTNode {
+  constructor(public value) {
+    super('StringLiteral')
+  }
+
+  toPrimitive() {
+    return ""
+  }
+}
+
+export class StringInterpolation extends ASTNode {
+  constructor(public expressions) {
+    super('StringInterpolation')
+  }
+
+  toPrimitive() {
+    return this.expressions
   }
 }
 
