@@ -37,7 +37,7 @@ export class Exporter {
     )
 
     for (let namespace in namespaces) {
-      const namespacePath = join(out, 'data', namespace)
+      const namespacePath = join(out, 'data', namespace, 'functions')
       for (let file in namespaces[namespace]) {
         const filePath = join(namespacePath, `${file}.mcfunction`)
 

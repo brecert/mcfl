@@ -22,7 +22,7 @@ class Exporter {
         fs_extra_1.default.ensureDir(out).catch(console.error);
         fs_extra_1.default.writeFile(path_1.join(out, 'pack.mcmeta'), JSON.stringify(this.pack)).catch(console.error);
         for (let namespace in namespaces) {
-            const namespacePath = path_1.join(out, 'data', namespace);
+            const namespacePath = path_1.join(out, 'data', namespace, 'functions');
             for (let file in namespaces[namespace]) {
                 const filePath = path_1.join(namespacePath, `${file}.mcfunction`);
                 switch (file) {
