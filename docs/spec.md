@@ -13,11 +13,11 @@ tellraw @a "hello world!"
 ## Comment
 ```go
 -- Comment
-`command`
+`tellraw @a "hello world!"`
 ```
 
 ```
-`command`
+tellraw @a "hello world!"
 ```
 
 ## Block
