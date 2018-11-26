@@ -1,6 +1,3 @@
-
-def main do
-	do as `@e`
-		`statements`
-	end
+def say_hello do
+  `tellraw @a "hello world!"`
 end

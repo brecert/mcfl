@@ -5,7 +5,9 @@
   "main": "./dist/index.js",
   "author": "brecert",
   "license": "MIT",
-  "bin": "./bin/mcfl",
+  "bin": {
+    "mcfl": "./dist/cmd",
+  },
   "files": [
     "dist/",
     "bin/",
