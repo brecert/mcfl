@@ -26,6 +26,7 @@ class Translator {
             },
         };
         this.io = {};
+        this.safe = true;
         this.selectors = {};
     }
     // TODO: Make the not needed
@@ -173,9 +174,14 @@ class Translator {
         if (last_1.last(this.blockInfo).type != 'def') {
             this.blockInfo.push({ type: 'block', selector: (node.selector) ? node.selector : '$none' });
             this.updateSelector(node.selector);
+            this.walk(node.statement);
             this.blockInfo.pop();
         }
-        this.walk(node.statement);
+        else {
+            this.blockInfo.push({ type: 'block', selector: (node.selector) ? node.selector : '$none' });
+            this.walk(node.statement);
+            this.blockInfo.pop();
+        }
     }
     walkRaw(node) {
         this.add(node.value);
@@ -208,7 +214,6 @@ class Translator {
     }
     genExecute(path = last_1.last(this.path), selector) {
         let as;
-        console.log(selector, path);
         if (selector != undefined &&
             selector != '$inherit' &&
             selector != '$none') {
