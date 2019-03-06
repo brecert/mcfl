@@ -35,14 +35,12 @@ false
 100_000_000
 ```
 
-### Command (or raw)
+### Raw
 ```go
 `execute as @a run say hi`
 ```
 
-### 
-
-## Command
+## Commands
 ```go
 `tellraw @a "hello world!"`
 ```
@@ -51,7 +49,7 @@ false
 tellraw @a "hello world!"
 ```
 
-## Comment
+## Comments
 ```go
 # Comment
 `tellraw @a "hello world!"`
@@ -61,7 +59,7 @@ tellraw @a "hello world!"
 tellraw @a "hello world!"
 ```
 
-## Block
+## Blocks
 ```go
 do as `@e`
   `statements`
@@ -95,7 +93,7 @@ x = 1
 
 ```
 
-## Constant
+## Constants
 ```go
 const TEN = 10
 ```
