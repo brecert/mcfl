@@ -1,5 +1,5 @@
 loops
-while not needed/redundent because main is always looping it may be more consise/clear sometimes
+while loops are not needed/redundent because main is always looping it may be more consise/clear occasionally
 ```
 del i
 let i = 0
