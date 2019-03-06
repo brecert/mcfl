@@ -76,6 +76,21 @@ end
 tellraw @a "hello world!"
 ```
 
+## Conditionals
+```go
+const TEN = 10
+if TEN < 20 do
+  tellraw "less than 20"
+elif TEN <= 15 do
+  tellraw "less than or equal to 15"
+else do
+  tellraw "20 or above"
+end
+```
+
+```go
+```
+
 ## Automatic ~~casting of~~ text components
 ```go
 const TEN = 10
