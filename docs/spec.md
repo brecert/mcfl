@@ -35,16 +35,23 @@ execute as @e run function test:e
 statements
 ```
 
-## Definition
+## Variables
 ```go
-def say_hello do
-  `tellraw @a "hello world!"`
-end
+# create scoreboard objective name as dummy
+let name
+
+# create scoreboard objective health as health
+let health : `health`
+
+# creates the scoreboard objective and assigns a default value, by default it's a dummy
+let x = 3
+
+# assigns to above
+x = 1
 ```
 
 ```mcfunction
-# test:say_hello
-tellraw @a "hello world!"
+
 ```
 
 ## Constant
@@ -57,6 +64,18 @@ scoreboard objectives add constant dummy
 scoreboard players set #TEN const 10
 ```
 
+## Definition
+```go
+def say_hello do
+  `tellraw @a "hello world!"`
+end
+```
+
+```mcfunction
+# test:say_hello
+tellraw @a "hello world!"
+```
+
 ## Automatic ~~casting of~~ text components
 ```go
 const TEN = 10
@@ -66,6 +85,7 @@ tellraw "The player executing this is #{@s}"
 
 ```mcfunction
 tellraw @s ["ten is ",{"score":{"name":"TEN","objective":"constant"}}]
+tellraw @s ["The player executing this is",{"selector":"@s"}]
 ```
 
 ## Markup like formatting
