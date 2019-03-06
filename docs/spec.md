@@ -68,3 +68,23 @@ tellraw "The player executing this is #{@s}"
 tellraw @s ["ten is ",{"score":{"name":"TEN","objective":"constant"}}]
 ```
 
+## Markup like formatting
+> unimplemented
+### bold
+```go
+tellraw "**hi**
+```
+
+```mcfunction
+tellraw @s [{"text":"hi","bold":true}]
+```
+
+### color
+```go
+tellraw "&[blue] hello &[white] world"
+```
+
+```mcfunction
+tellraw @s [{"text":"hello ","color":"blue"},{"text":"world","color":"white"}]
+```
+
