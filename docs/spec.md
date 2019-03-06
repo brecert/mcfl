@@ -1,6 +1,47 @@
 # Spec
 Most of the features are not implemented, but planned to be implemented.
 
+## Types
+### Bool
+```go
+true
+false
+```
+
+```
+1
+0
+```
+
+### Text Component
+```go
+"&[green]hello **world**"
+```
+
+### String
+```go
+'hello world!'
+```
+
+### Number
+```go
+# int
+1
+
+# float
+1.2
+
+# int
+100_000_000
+```
+
+### Command (or raw)
+```go
+`execute as @a run say hi`
+```
+
+### 
+
 ## Command
 ```go
 `tellraw @a "hello world!"`
