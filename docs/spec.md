@@ -59,6 +59,39 @@ tellraw @a "hello world!"
 tellraw @a "hello world!"
 ```
 
+## Math
+```
+1 + 1 # automatically simplifies to two
+x + 1 # assigns to temporary variable
+x = x + 1 # assigns x to temporary variable
+# or
+x += 1 # same result
+```
+
+## Expressions
+### Equality
+```
+if x != y do
+end
+
+if 4 < 7 do
+end
+
+if x > 2 do
+end
+```
+
+```
+execute unless score @s x = @s y run function test:if/1
+
+scoreboard players set #4 numb 4
+scoreboard players set #7 numb 7
+execute if score #4 numb < #7 numb run function test:if/2
+
+scoreboard players set #2 numb 2
+execute if @s x > #2 numb run function test:if/3
+```
+
 ## Blocks
 ```go
 do as `@e`
@@ -91,6 +124,12 @@ x = 1
 
 ```mcfunction
 
+```
+
+## SettingAssignment
+assign a value to a variable that's used pre-compilation
+```go
+@namespace: test
 ```
 
 ## Constants
