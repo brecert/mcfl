@@ -68,6 +68,24 @@ x = x + 1 # assigns x to temporary variable
 x += 1 # same result
 ```
 
+```
+# test:setup
+scoreboard players set #1 numb 1
+
+# test:main
+scoreboard players operation #0 temp = #1 numb
+scoreboard players operation #0 temp += #1 numb
+
+scoreboard players operation #0 temp = @s x
+scoreboard players operation #0 temp += #1 numb
+
+scoreboard players operation #0 temp = @s x
+scoreboard players operation #0 temp += #1 numb
+scoreboard players operation @s x = #0 temp
+
+scoreboard players operation @s x += #1 numb
+```
+
 ## Expressions
 ### Equality
 ```
