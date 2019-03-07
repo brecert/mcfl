@@ -77,7 +77,7 @@ end
 if 4 < 7 do
 end
 
-if x > 2 do
+if !(x > 2) do
 end
 ```
 
@@ -89,7 +89,7 @@ scoreboard players set #7 numb 7
 execute if score #4 numb < #7 numb run function test:if/2
 
 scoreboard players set #2 numb 2
-execute if @s x > #2 numb run function test:if/3
+execute unless @s x > #2 numb run function test:if/3
 ```
 
 ## Blocks
