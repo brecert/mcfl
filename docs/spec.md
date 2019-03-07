@@ -1,6 +1,52 @@
 # Spec
 Most of the features are not implemented, but planned to be implemented.
 
+## How the transpiler works
+Each value holds a reference to a minecraft value
+```
+x = (1 + 1) + x
+```
+would compile to
+```
+# test:setup
+scoreboard players set #1 int 1
+
+# test:main
+scoreboard players operation #0 temp = #1 int
+scoreboard players operation #0 temp += #1 int
+
+scoreboard players operation #0 temp = #0 temp
+scoreboard players operation #0 temp += @s x
+
+scoreboard players operation @s x = #0 temp
+```
+
+the data for that would be seen similar to the following psuedocode
+
+```js
+parser.on('op', (l, op, r) => {
+
+  let left = l.ref
+  let right = r.ref
+  let temp = std.temp.ref
+
+  // returns the temp ref because that's what was being manipulated
+  // std.op generates and adds the code to the io
+  let eqref = std.op('=', temp, r.ref)
+
+  return std.op(op.value, eqref, r.ref)
+})
+
+parser.on('eq', (l, eq, r) => {
+  return std.op(eq.value, l.ref, r.ref)
+})
+
+// with this in mind
+// 1 + 1 => temp
+// temp + x => temp
+// x = temp
+```
+
 ## Types
 ### Bool
 ```go
