@@ -79,17 +79,28 @@ end
 
 if !(x > 2) do
 end
+
+if 1 > x + 10 do
+end
 ```
 
 ```
-execute unless score @s x = @s y run function test:if/1
-
+# test:setup
 scoreboard players set #4 numb 4
 scoreboard players set #7 numb 7
+scoreboard players set #2 numb 2
+scoreboard players set #10 numb 10
+
+# test:main
+execute unless score @s x = @s y run function test:if/1
+
 execute if score #4 numb < #7 numb run function test:if/2
 
-scoreboard players set #2 numb 2
 execute unless @s x > #2 numb run function test:if/3
+
+scoreboard players operation #0 temp = @s x 
+scoreboard players operation #0 temp += #10 numb
+execute if #1 numb > #0 temp run function test:if/4
 ```
 
 ## Blocks
