@@ -47,6 +47,53 @@ parser.on('eq', (l, eq, r) => {
 // x = temp
 ```
 
+Every primitive is composed of or creates a ref (reference),
+A ref is data about the code containing the scope, variable name, function name, etc...
+
+every operation should be operating based on refs and not much else
+
+the int `1` is a ref to the scoreboard player and objective `#1 int` which would hold the value `1`
+
+in code you may want to store references for manipulation or other reasons
+
+while everything may be a ref, you can't manipulate or store the ref yourself
+
+to do this references can be stored in reference pointers `@name`
+
+references are static and cannot be manipulated once created
+
+idk why references are useful, they feel important and needed though, internally atleast
+```
+@x = 1
+# @x = @x + 1 # => err already defined
+@y = @x + 1
+
+@iz = @y > @x
+
+if @iz do end
+```
+
+```
+# main
+function ref/0_x
+function ref/0_y
+function ref0_iz
+execute if #3 temp matches 1 run function if/0 
+
+# ref/0_x
+scoreboard players operate #0 temp = #1 int
+
+# ref/0_y
+scoreboard players operate #1 temp = #0 temp
+scoreboard players operate #1 temp += #1 int
+
+# ref/0_iz
+scoreboard players set #2 temp 0
+execute if #1 temp > #0 temp run scoreboard players set #3 temp 1
+
+# if/0
+```
+
 ## Types
 ### Bool
 ```go
