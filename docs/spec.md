@@ -146,6 +146,10 @@ end
 
 if 1 > x + 10 do
 end
+
+@iz = 1 > 2
+if is do 
+end
 ```
 
 ```
@@ -165,6 +169,14 @@ execute unless @s x > #2 numb run function test:if/3
 scoreboard players operation #0 temp = @s x 
 scoreboard players operation #0 temp += #10 numb
 execute if #1 numb > #0 temp run function test:if/4
+
+execute test:ref/iz
+execute if #0 temp matches 1 run function test:if/5
+
+# test:ref/iz
+# result is bool, 0 or 1
+scoreboard players set #1 temp 0
+execute if #1 numb > #2 numb run scoreboard players set #1 temp 1
 ```
 
 ## Blocks
